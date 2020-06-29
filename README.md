@@ -205,3 +205,138 @@ db.listingsAndReviews.find({
     'address.country':1
 })
 ```
+
+# MOVIES DB
+
+## Find all movies not produced in the USA
+```
+db.movies.find({
+	'countries': {
+		'$nin': ['USA']
+	}
+}, {
+	'title':1,
+	'countries':1
+})
+```
+
+Alternative answer:
+```
+db.movies.find({
+	'countries': {
+		'$not' : {
+			'$in':['USA']
+		}
+	}
+}, {
+	'title':1,
+	'countries':1
+})
+```
+
+## Find movies that have at least 3 wins in the awards object
+```
+db.movies.find({
+    'awards.nominations':{
+        '$gte':3
+    }
+}, {
+    title: 1
+}).pretty()
+```
+
+## Find movies that has at least 3 nominations
+```
+db.movies.find({'awards.nominations': { '$gte': 3 }},{'title':1, 'awards.nominations':1}).pretty()
+```
+
+## Find movies that cast Tom Cruise
+```
+db.movies.find({'cast': 'Tom Cruise'}, {'title':1, 'cast':1})
+```
+
+## Find movies that includes Charlie Chaplin in the directors
+```
+db.movies.find({
+    'directors': 'Charles Chaplin'
+},{
+    'title':1,
+    'directors': 1
+})
+```
+
+# Creating a new database in Mongo
+
+The code below will create a new database named `animal_shelter`
+```
+use animal_shelter
+```
+
+## Create a new collection
+Insert a new document into the non-existent collection and Mongo will create it
+
+```
+db.animals.insert({
+    "name":"Cookie",
+    "breed":"Golden Retriever",
+    "animal_type":"Dog"
+})
+```
+
+```
+db.animals.insert({
+    "name":"Potato",
+    "breed":"Shiba Inu",
+    "animal_type":"Dog",
+    "checkups": [
+        {
+            "vet":"Dr. Chua",
+            "diagnosis":"Hips problem",
+            "date":"1/12/2019"
+        },
+        {
+            "vet":"Dr Chua",
+            "diagnosis":"Skin irration",
+            "date":"25/06/2019"
+        }
+        
+    ]
+})
+```
+
+## Insert many vets at one go
+```
+db.vets.insertMany([
+    {
+        "name":"Dr Chua",
+        "license":"X123456",
+        "clinic":"Sunshine Way Pet Clinic",
+        "address": {
+            "street":"Sunshine Way Ave 1",
+            "blk":"123",
+            "unit":"#01-06"
+        }
+    },
+    {
+        "name":"Dr Leon Lai",
+        "license":"A123456D",
+        "clinic":"Serene Center Pet Care",
+        "address": {
+            "street":"Bukit Timah Drive 1",
+            "blk":"220",
+            "unit":"01-23"
+        }
+    }
+])
+```
+
+## Change the vet `Dr Chua` to `Dr Clarence Chua`
+```
+db.vets.update({
+    '_id':ObjectId("5ef9e7665c19070d2777cbfc")
+},{
+    "$set": {
+        "name":"Dr. Clarence Chua"
+    }
+})
+```
