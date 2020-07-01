@@ -2,6 +2,16 @@
 
 {%block content %}
 <h1>Listings</h1>
+    {%if page_number > 0 %}
+        <a href="/?page={{page_number-1}}" class="btn btn-primary">Previous 20 Listings</a>
+    {%endif%}
+
+
+    <a href="/?page={{page_number+1}}" class="btn btn-primary">Next 20 Listings</a>
+
+
+    <h2>Page {{page_number+1}} </h2>
+
     {%for listing in all_listings%}
     <div class="card">
      <img class="card-img-top" src="{{listing.images.picture_url}}" alt="Card image cap">
