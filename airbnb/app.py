@@ -12,9 +12,10 @@ DB_NAME = "sample_airbnb"
 
 client = pymongo.MongoClient(MONGO_URI)
 
-all_movies = client[DB_NAME].listingsAndReviews.find().limit(10)
-for m in all_movies:
-    print(m)
+@app.route('/')
+def show_listings():
+    all_listings = client[DB_NAME].listingsAndReviews.find().limit(10)
+    return render_template('show_listings.template.html', all_listings=all_listings)
 
 # "magic code" -- boilerplate
 if __name__ == '__main__':
