@@ -1,3 +1,9 @@
+# Installing the dependencies
+
+```
+pip3 install -r requirements.txt
+```
+
 After we have `use` a database, there's a special variable available. 
 The variable is called `db`
 
