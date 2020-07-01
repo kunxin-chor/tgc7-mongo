@@ -1,0 +1,30 @@
+{% extends "layout.template.html" %}
+
+{%block content %}
+<h3>All Animals</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Breed</th>
+            <th></th>
+        </tr>
+        {%for animal in all_animals %}
+            <tr>
+                <td>{{animal.name}}</td>
+                <td>{{animal.type.name}}</td>
+                <td>{{animal.breed}}</td>
+                <td>
+                    <a href="{{ url_for('update_animal', id=animal._id)}}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="{{ url_for('delete_animal', animal_id=animal._id) }}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        {%endfor%}
+    </thead>
+
+
+</table>
+
+
+{%endblock%}
