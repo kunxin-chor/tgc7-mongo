@@ -3,6 +3,7 @@ import os
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import pymongo
+import datetime
 
 load_dotenv()
 
@@ -17,13 +18,15 @@ client = pymongo.MongoClient(MONGO_URI)
 @app.route('/animals')
 def show_all_animals():
     all_animals = client[DB_NAME].animals.find()
-    return render_template('show_animals.template.html', all_animals=all_animals)
+    return render_template('show_animals.template.html',
+                           all_animals=all_animals)
 
 
 @app.route('/animal/create')
 def create_animal():
     all_animal_types = client[DB_NAME].animal_types.find()
-    return render_template('create_animal.template.html', all_animal_types=all_animal_types)
+    return render_template('create_animal.template.html',
+                           all_animal_types=all_animal_types)
 
 
 @app.route('/animal/create', methods=["POST"])
@@ -90,21 +93,56 @@ def process_update_animal(id):
     return redirect(url_for('show_all_animals'))
 
 
-@app.route('/animals/delete/<animal_id>')
+@app.route('/animal/delete/<animal_id>')
 def delete_animal(animal_id):
     animal = client[DB_NAME].animals.find_one({
         "_id": ObjectId(animal_id)
     })
 
-    return render_template('confirm_delete_animal.template.html', animal=animal)
+    return render_template(
+        'confirm_delete_animal.template.html',
+        animal=animal)
 
 
-@app.route('/animals/delete/<animal_id>', methods=["POST"])
+@app.route('/animal/delete/<animal_id>', methods=["POST"])
 def process_delete_animal(animal_id):
     client[DB_NAME].animals.remove({
         "_id": ObjectId(animal_id)
     })
     return redirect(url_for('show_all_animals'))
+
+
+@app.route('/animal/<animal_id>/checkup/')
+def show_animal_checkups(animal_id):
+    animal = client[DB_NAME].animals.find_one({
+        "_id": ObjectId(animal_id)
+    })
+    return render_template('checkup.template.html', animal=animal)
+
+
+@app.route('/animal/<animal_id>/checkup/', methods=["POST"])
+def process_add_checkup(animal_id):
+    vet_name = request.form.get('vet-name')
+    date = request.form.get('checkup-date')
+    diagnosis = request.form.get('diagnosis')
+
+    # convert the string of the data into an actual date object
+    date = datetime.datetime.strptime(date, "%Y-%m-%d")
+
+    client[DB_NAME].animals.update_one({
+        "_id": ObjectId(animal_id),
+    }, {
+        "$push": {
+            'checkups': {
+                "_id": ObjectId(),
+                "vet": vet_name,
+                "date": date,
+                "diagnosis": diagnosis
+            }
+        }
+    })
+
+    return redirect(url_for('show_animal_checkups', animal_id=animal_id))
 
 
 # "magic code" -- boilerplate
