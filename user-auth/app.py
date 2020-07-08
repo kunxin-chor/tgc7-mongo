@@ -30,7 +30,6 @@ class User(flask_login.UserMixin):
 # user loader for the Flask-Login login manager
 @login_manager.user_loader
 def user_loader(email):
-    print("email=", email)
     # find the user from the database by its email
     user_in_db = client[DB_NAME].users.find_one({
         "email": email
@@ -40,8 +39,8 @@ def user_loader(email):
         # create a new user object
         user = User()
         # set the id of the user object to be the user's email
-        user.id = user_in_db['email']
-        return User
+        user.id = user_in_db['email']        
+        return user
     else:
         return None
 
