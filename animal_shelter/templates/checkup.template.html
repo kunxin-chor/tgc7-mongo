@@ -1,0 +1,37 @@
+{%extends 'layout.template.html' %}
+
+
+{%block content %}
+<h1>Checkups for animal: {{animal.name}}
+
+<h2>Add in a new checkup</h2>
+<form method="POST">
+    <div class="form-group">
+        <label>Vet Name</label>
+        <input type="text" name="vet-name" class="form-control" placeholder="Enter the vet name"/>
+    </div>
+    <div class="form-group">
+        <label>Checkup date</label>
+        <input type="date" name="checkup-date" class="form-control" placeholder="Date of the checkup"/>
+    </div>
+    <div class="form-group">
+        <label>Diagnosis</label>
+        <textarea name="diagnosis" class="form-control"></textarea>
+    </div>
+    <input type="submit" value="Add Checkup"/>
+
+    <hr/>
+    <h1>Past Checkups</h1>
+    {%for c in animal.checkups%}
+    <div class="card">
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item">Vet Name: {{c.vet}}</li>
+                <li class="list-group-item">Date: {{c.date}}</li>
+                <li class="list-group-item">Diagnosis: {{c.diagnosis}}</li>
+            </ul>
+        </div>
+    </div>
+    {%endfor%}
+</form>
+{%endblock%}
