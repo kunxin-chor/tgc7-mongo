@@ -31,6 +31,8 @@
                 <li class="list-group-item">Diagnosis: {{c.diagnosis}}</li>
             </ul>
         </div>
+        <a href="{{url_for('show_edit_checkup', checkup_id= c._id ) }}" class="btn btn-primary btn-sm">Edit</a>
+        <a href="{{url_for('confirm_delete_checkup', checkup_id= c._id ) }}" class="btn btn-danger btn-sm">Delete</a>
     </div>
     {%endfor%}
 </form>

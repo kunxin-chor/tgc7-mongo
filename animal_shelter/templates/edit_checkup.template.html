@@ -1,0 +1,29 @@
+{% extends 'layout.template.html' %} {%block content %}
+<form method="POST">
+  <div class="form-group">
+    <label>Vet Name</label>
+    <input
+      type="text"
+      name="vet-name"
+      class="form-control"
+      placeholder="Enter the vet name"
+      value = "{{checkup.vet}}"
+    />
+  </div>
+  <div class="form-group">
+    <label>Checkup date</label>
+    <input
+      type="date"
+      name="checkup-date"
+      class="form-control"
+      placeholder="Date of the checkup"
+      value="{{checkup.date.strftime('%Y-%m-%d')}}"
+    />
+  </div>
+  <div class="form-group">
+    <label>Diagnosis</label>
+    <textarea name="diagnosis" class="form-control">{{checkup.diagnosis}}</textarea>
+  </div>
+  <input type="submit" value="Update Checkup" />
+</form>
+{%endblock%}

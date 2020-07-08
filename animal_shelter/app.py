@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 import os
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
@@ -8,6 +8,7 @@ import datetime
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = "ziL|f$QqE$=P9)3*w!Xw?GgQ7Zx!(3(!3LG;iBFakmPXLZ.*z@,,c94/6Ipsf^2"
 
 MONGO_URI = os.environ.get('MONGO_URL')
 DB_NAME = "animal_shelter"
@@ -134,6 +135,7 @@ def process_add_checkup(animal_id):
     }, {
         "$push": {
             'checkups': {
+                # ObjectId() is a function that returns a new ObjectId
                 "_id": ObjectId(),
                 "vet": vet_name,
                 "date": date,
@@ -143,6 +145,74 @@ def process_add_checkup(animal_id):
     })
 
     return redirect(url_for('show_animal_checkups', animal_id=animal_id))
+
+
+@app.route('/checkup/<checkup_id>')
+def show_edit_checkup(checkup_id):
+    # retrieve the checkup by its id
+    allCheckups = client[DB_NAME].animals.find_one({
+        'checkups._id': ObjectId(checkup_id)
+    }, {
+        'checkups': {
+            '$elemMatch': {
+                '_id': ObjectId(checkup_id)
+            }
+        }
+    })
+
+    checkup = allCheckups["checkups"][0]
+    print(checkup)
+
+    return render_template('edit_checkup.template.html', checkup=checkup)
+
+
+@app.route('/checkup/<checkup_id>', methods=["POST"])
+def process_update_checkup(checkup_id):
+
+    date = request.form.get('checkup-date')
+    date = datetime.datetime.strptime(date, "%Y-%m-%d")
+
+    client[DB_NAME].animals.update_one({
+        "checkups._id": ObjectId(checkup_id)
+    }, {
+        '$set': {
+            'checkups.$.vet': request.form.get('vet-name'),
+            'checkups.$.diagnosis': request.form.get('diagnosis'),
+            'checkups.$.date': date
+        }
+    })
+
+    flash("Checkup updated")
+    return redirect(url_for('show_all_animals'))
+
+
+@app.route('/checkup/<checkup_id>/delete')
+def confirm_delete_checkup(checkup_id):
+    checkup = client[DB_NAME].animals.find_one({
+        'checkups._id': ObjectId(checkup_id)
+    }, {
+        'checkups': {
+            '$elemMatch': {
+                '_id': ObjectId(checkup_id)
+            }
+        }
+    })['checkups'][0]
+
+    return render_template('delete_checkup.template.html', checkup=checkup)
+
+
+@app.route('/checkup/<checkup_id>/delete', methods=["POST"])
+def process_delete_checkup(checkup_id):
+    client[DB_NAME].animals.update_one({
+        'checkups._id': ObjectId(checkup_id)
+    }, {
+        "$pull": {
+            'checkups': {
+                '_id': ObjectId(checkup_id)
+            }
+        }
+    })
+    return "Checkup deleted"
 
 
 # "magic code" -- boilerplate
