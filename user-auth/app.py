@@ -39,7 +39,7 @@ def user_loader(email):
         # create a new user object
         user = User()
         # set the id of the user object to be the user's email
-        user.id = user_in_db['email']        
+        user.id = user_in_db['email']
         return user
     else:
         return None
@@ -104,6 +104,7 @@ def profile():
 def logout():
     flask_login.logout_user()
     return "logged out"
+
 
 # "magic code" -- boilerplate
 if __name__ == '__main__':
