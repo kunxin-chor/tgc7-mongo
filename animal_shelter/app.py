@@ -9,6 +9,8 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "ziL|f$QqE$=P9)3*w!Xw?GgQ7Zx!(3(!3LG;iBFakmPXLZ.*z@,,c94/6Ipsf^2"
+CLOUD_NAME = os.environ.get("CLOUD_NAME")
+UPLOAD_PRESET = os.environ.get("UPLOAD_PRESET")
 
 MONGO_URI = os.environ.get('MONGO_URL')
 DB_NAME = "animal_shelter"
@@ -27,7 +29,10 @@ def show_all_animals():
 def create_animal():
     all_animal_types = client[DB_NAME].animal_types.find()
     return render_template('create_animal.template.html',
-                           all_animal_types=all_animal_types)
+                           all_animal_types=all_animal_types,
+                           cloud_name=CLOUD_NAME,
+                           upload_preset=UPLOAD_PRESET
+                           )
 
 
 @app.route('/animal/create', methods=["POST"])
@@ -35,6 +40,7 @@ def process_create_animal():
     animal_name = request.form.get('animal_name')
     animal_type = request.form.get('animal_type')
     breed = request.form.get('breed')
+    uploaded_file_url = request.form.get('uploaded_file_url')
 
     animal_type_object = client[DB_NAME].animal_types.find_one({
         "_id": ObjectId(animal_type)
@@ -46,7 +52,8 @@ def process_create_animal():
             "_id": animal_type_object["_id"],
             "name": animal_type_object["type_name"]
         },
-        "breed": breed
+        "breed": breed,
+        "uploaded_file_url": uploaded_file_url
     })
 
     return "New animal saved"
@@ -65,7 +72,9 @@ def update_animal(id):
 
     return render_template("update_animal.template.html",
                            animal=animal,
-                           all_animal_types=all_animal_types)
+                           all_animal_types=all_animal_types,
+                           cloud_name=CLOUD_NAME,
+                           upload_preset=UPLOAD_PRESET)
 
 
 @app.route('/animal/update/<id>', methods=["POST"])
@@ -73,6 +82,7 @@ def process_update_animal(id):
     animal_name = request.form.get('animal_name')
     animal_type = request.form.get('animal_type')
     breed = request.form.get('breed')
+    uploaded_file_url = request.form.get('uploaded_file_url')
 
     selected_animal_type = client[DB_NAME].animal_types.find_one({
         "_id": ObjectId(animal_type)
@@ -85,9 +95,11 @@ def process_update_animal(id):
             "name": animal_name,
             "type": {
                 '_id': selected_animal_type["_id"],
-                'name': selected_animal_type["type_name"]
+                'name': selected_animal_type["type_name"],
+
             },
-            "breed": breed
+            "breed": breed,
+            'uploaded_file_url': uploaded_file_url
         }
     })
 
