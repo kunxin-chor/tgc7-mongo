@@ -142,7 +142,7 @@ db.listingsAndReviews.find({
 }).pretty()
 ```
 
-## Find all listings in Canada
+## Find all listings in Singapore
 ```
 db.listingsAndReviews.find({
     'address.country':'Singapore'
@@ -161,6 +161,36 @@ db.listingsAndReviews.find({
 }, {
     'name':1,
     'address.country':1
+})
+```
+# Find all documents that has a particular id in one of its array elements
+```
+db.animals.find({
+    'checkups._id':ObjectId('5f0324fe22390f7fefb455aa')
+}).pretty()
+
+```
+# Find all documents that has a particular id in one of its array elements
+# and only return that array
+```
+db.animals.find({
+    'checkups._id':ObjectId('5f0324fe22390f7fefb455aa')
+},{
+    'checkups':1
+})
+```
+
+# Find all documents that has a particular id in one of its array elements
+# and return only the element that matches that particular id
+```
+db.animals.find({
+    'checkups._id':ObjectId('5f0324fe22390f7fefb455aa')
+}, {
+    'checkups': {
+        '$elemMatch': {
+            '_id':ObjectId('5f0324fe22390f7fefb455aa')
+        }
+    }
 })
 ```
 
@@ -346,3 +376,20 @@ db.vets.update({
     }
 })
 ```
+
+## Add a new checkup to an animal
+```
+db.animals.updateOne({
+    "_id":ObjectId("5efc8a26f9f4582616f7940e")
+}, {
+    "$push": {
+        'checkups': {
+            "vet":"Dr Chua",
+            "date": new Date("2020-06-29"),
+            "diagnosis":"Fluffy has diabetes. Must workout more"
+        }
+    }
+})
+```
+
+# UploadCare

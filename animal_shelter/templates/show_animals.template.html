@@ -8,6 +8,7 @@
             <th>Name</th>
             <th>Type</th>
             <th>Breed</th>
+            <th style="width:300px">Image</th>
             <th></th>
         </tr>
         {%for animal in all_animals %}
@@ -15,6 +16,11 @@
                 <td>{{animal.name}}</td>
                 <td>{{animal.type.name}}</td>
                 <td>{{animal.breed}}</td>
+                <td>
+                    {%if animal.uploaded_file_url %}
+                    <img src="{{animal.uploaded_file_url}}" class="img-fluid img-thumbnail"/>
+                    {%endif%}
+                </td>
                 <td>
                     <a href="{{ url_for('update_animal', id=animal._id)}}" class="btn btn-primary btn-sm">Edit</a>
                     <a href="{{ url_for('show_animal_checkups', animal_id=animal._id )}}" class="btn btn-primary btn-sm">Manage Checkups</a>
